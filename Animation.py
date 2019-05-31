@@ -69,7 +69,8 @@ FISH_DOWN.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 TANK_HIGHT = 10
 TANK_WIDTH = 15
 STEP_SIZE = 9
-
+TANK = [[0 for x in range(TANK_WIDTH*STEP_SIZE)] for y in range(TANK_HEIGHT*STEP)]
+TANK_PHASE = [[0 for x in range(TANK_WIDTH)] for y in range(TANK_HEIGHT)]
 
 ##############################################################
 #   Function Prototype

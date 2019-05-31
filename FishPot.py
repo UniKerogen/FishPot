@@ -97,8 +97,13 @@ def consumed(hour, info):
 
 def check_save_file():
     # Check for save file and load info
+    # Check for existence
     exists = os.path.isfile('data')
-    not_empty = os.stat('data').st_size
+    # Check for empty file
+    if exists:
+        not_empty = os.stat('data').st_size
+    else:
+        not_empty = 0
     current_time = time.localtime(time.time())
     # Load from Save
     if exists and not_empty != 0:

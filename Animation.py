@@ -66,11 +66,17 @@ FISH_DOWN.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 ##############################################################
 #   Variable Definition
 ##############################################################
+FACE_LEFT = 10000
+FACE_RIGHT = 10001
+FACE_UP = 10002
+FACE_DOWN = 10003
 TANK_HIGHT = 10
 TANK_WIDTH = 15
 STEP_SIZE = 9
 TANK = [[0 for x in range(TANK_WIDTH*STEP_SIZE)] for y in range(TANK_HEIGHT*STEP)]
 TANK_PHASE = [[0 for x in range(TANK_WIDTH)] for y in range(TANK_HEIGHT)]
+BOTTOM_BOUNDARY = ["-" for y in range(TANK_HEIGHT*STEP)]
+
 
 ##############################################################
 #   Function Prototype
@@ -152,12 +158,64 @@ def fish_movement(current_spot):
   # Next Spot Predicted
   return next_spot
   
+
+def fish_face(next_location, current_location):
+  # Determine where the fish is facing
+  if next_location[0] == current_location[0]:
+    if next_location[1] > current_location[1]:
+      facing == FACE_DOWN
+    else:
+      facing == FACE_UP
+  else:
+    if next_location[0] > current_location[0]:
+      facing == FACE_RIGHT
+    else:
+      facing == FACE_LEFT  
+  # Retrun Result Value
+  return facing
   
+  
+def print_tank(fish_location, fish_direction):
+  # Select the Correct Fish Location
+  if fish_direction == FACE_LEFT:
+    fish_directed = FISH_LEFT
+  elif fish_direction == FACE_RIGHT:
+    fish_directed = FISH_RIGHT
+  elif fish_direction == FACE_UP:
+    fish_directed = FISH_UP
+  elif fish_direction == FACE_DOWN:
+    fish_directed = FISH_DOWN
+  else:
+    print("Fish is right now invisible!")  
+  # Prepare the Tank
+  for x in range(STEP_SIZE):
+    for y in range(STEP_SIZE):
+      TANK[fish_location[0]*STEP_SIZE+x][fish_location[1]*STEP_SIZE+y] = fish_directed[x][y]  
+  # Print Tank with Boundary
+  for y in range(TANK_HEIGHT*STEP):
+    print("|", TANK[y], "|")
+  print BOTTOM_BOUNDARY
+  # Clean Tank
+  TANK = [[0 for x in range(TANK_WIDTH*STEP_SIZE)] for y in range(TANK_HEIGHT*STEP)]
+
+
 ##############################################################
 #   Main Function
 ##############################################################
 def main():
   print("Hello World!")
+  # Current Time
+  current_location = [random.randint(1, 15), random.randint(1, 10)]
+  print("Current Location :", current_location)
+  # Future Time
+  next_location = fish_movement(current_location)
+  print("Next Location :", next_location)
+  fish_direction = fish_face(next_location, current_location)
+  # Step into Future
+  current_location = next_location
+  print_tank(current_location, fish_direction)
+  time.sleep(5)
+  os.system("clear")
   
   
 ##############################################################

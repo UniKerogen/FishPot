@@ -234,7 +234,7 @@ def getHeight(array):
 def print_tank(fish_location, fish_direction):
     # Clean Tank
     tank = [[0 for x in range(TANK_WIDTH * (STEP_SIZE + 1))] for y in range(TANK_HEIGHT * (STEP_SIZE + 1))]
-    print("Obtained Tank Size : ", getWidth(tank), "*", getHeight(tank))
+    print("Obtained Tank Size : ", getHeight(tank), "*", getWidth(tank))
     fish_directed = [[0 for x in range(STEP_SIZE)] for y in range(STEP_SIZE)]
     # Select the Correct Fish Location
     if fish_direction == FACE_LEFT:
@@ -247,23 +247,27 @@ def print_tank(fish_location, fish_direction):
         fish_directed = FISH_DOWN
     else:
         print("Fish is right now invisible!")
+        fish_directed = EMPTY_BOX
     # Prepare the Tank - Initialize Inner Content
     for x in range(STEP_SIZE):
         for y in range(STEP_SIZE):
-            print("    Overwriting Location :[", fish_location[0]*STEP_SIZE+x, "][", fish_location[1]*STEP_SIZE+y, "] from", tank[fish_location[0]*STEP_SIZE+x][fish_location[1]*STEP_SIZE+y], "to", fish_directed[x][y])
-            tank[fish_location[0]*STEP_SIZE+x][fish_location[1]*STEP_SIZE+y] = fish_directed[x][y]
+            #print(fish_location[0]*STEP_SIZE+x)
+            #print(fish_location[1]*STEP_SIZE+y)
+            #print(tank[fish_location[1]*STEP_SIZE+y][fish_location[0]*STEP_SIZE+x])
+            #print("    Overwriting Location :[", fish_location[1]*STEP_SIZE+y, "][", fish_location[0]*STEP_SIZE+x, "] from", tank[fish_location[1]*STEP_SIZE+y][fish_location[0]*STEP_SIZE+x], "to", fish_directed[y][x])
+            tank[fish_location[1]*STEP_SIZE+y][fish_location[0]*STEP_SIZE+x] = fish_directed[y][x]
     # Prepare the Tank - Add Vertical Boundary
     for x in range(len(tank[0])):
         tankwid = x
-    print("Counted Width :", tankwid)
+    #print("Counted Width :", tankwid)
     for y in range(len(tank)):
-        print("    Overwriting row :", y)
-        print("[",y,"][ 0 ] -> ", tank[y][0])
+        #print("    Overwriting row :", y)
+        #print("[",y,"][ 0 ] -> ", tank[y][0])
         tank[y][0] = 1
-        print("[",y,"][ 0 ] -> ", tank[y][0])
-        print("[",y,"][",tankwid,"] -> ", tank[y][tankwid])
+        #print("[",y,"][ 0 ] -> ", tank[y][0])
+        #print("[",y,"][",tankwid,"] -> ", tank[y][tankwid])
         tank[y][tankwid] = 1
-        print("[",y,"][",tankwid,"] -> ", tank[y][tankwid])
+        #print("[",y,"][",tankwid,"] -> ", tank[y][tankwid])
     # Prepare the Tank - Add Bottom Boundary
     tank.append(BOTTOM_BOUNDARY)
     # Print Tank
@@ -287,7 +291,7 @@ def main():
     current_location = next_location
     print_tank(current_location, fish_direction)
     time.sleep(3)
-    os.system("cls")
+    #os.system("cls")
 
 ##############################################################
 #    Main Function Runner

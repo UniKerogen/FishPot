@@ -1,28 +1,26 @@
-
-
 ##############################################################
 #   Libraries
 ##############################################################
-import os
-import sys
-import random
 import time
-import numpy
+import random
+import signal
+import os
+import turtle as myPen
+import sys
+
+
+##############################################################
+#   Pre-Defined Characters
+##############################################################
+myPen.tracer(0)
+myPen.speed('fastest')
+myPen.color("#000000")
+myPen.hideturtle()
 
 
 ##############################################################
 #   Pixel Prototype Definition
 ##############################################################
-EMPTY_BLOCK =     [[0, 0, 0, 0, 0, 0, 0, 0, 0]]
-EMPTY_BLOCK.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-EMPTY_BLOCK.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-EMPTY_BLOCK.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-EMPTY_BLOCK.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-EMPTY_BLOCK.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-EMPTY_BLOCK.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-EMPTY_BLOCK.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-EMPTY_BLOCK.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-
 FISH_LEFT     = [[0, 0, 0, 0, 0, 0, 0, 0, 0]]
 FISH_LEFT.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 FISH_LEFT.append([0, 0, 0, 1, 0, 0, 0, 1, 0])
@@ -74,14 +72,61 @@ FACE_DOWN = 10003
 TANK_HEIGHT = 3
 TANK_WIDTH = 6
 STEP_SIZE = 9
-TANK = [[0 for x in range(TANK_WIDTH*STEP_SIZE)] for y in range(TANK_HEIGHT*STEP_SIZE)]
-TANK_PHASE = [[0 for x in range(TANK_WIDTH)] for y in range(TANK_HEIGHT)]
-BOTTOM_BOUNDARY = ["-" for y in range(TANK_HEIGHT*STEP_SIZE)]
+EMPTY_BOX = [[0 for x in range(STEP_SIZE)] for y in range(STEP_SIZE)]
+BOTTOM_BOUNDARY = [1 for x in range(TANK_WIDTH * (STEP_SIZE + 1))]
 
 
 ##############################################################
 #   Function Prototype
 ##############################################################
+def keyboardInterruptHandler(signal, frame):
+    print("KeyboardInterrupt (ID: {}) has been caught. Cleaning up...".format(signal))
+    exit(100)
+
+
+def box(intDim):
+    myPen.begin_fill()
+    # 0 deg.
+    myPen.forward(intDim)
+    myPen.left(90)
+    # 90 deg.
+    myPen.forward(intDim)
+    myPen.left(90)
+    # 180 deg.
+    myPen.forward(intDim)
+    myPen.left(90)
+    # 270 deg.
+    myPen.forward(intDim)
+    myPen.end_fill()
+    myPen.setheading(0)
+
+def draw(picture, boxSize, delay):
+    myPen.hideturtle()
+    myPen.penup()
+    myPen.forward(-100)
+    myPen.setheading(90)
+    myPen.forward(100)
+    myPen.setheading(0)
+    for i in range (0,len(picture)):
+        for j in range (0,len(picture[i])):
+            if picture[i][j]==1:
+                box(boxSize)
+            myPen.penup()
+            myPen.forward(boxSize)
+            myPen.pendown()	
+        myPen.setheading(270) 
+        myPen.penup()
+        myPen.forward(boxSize)
+        myPen.setheading(180) 
+        myPen.forward(boxSize*len(picture[i]))
+        myPen.setheading(0)
+        myPen.pendown()
+    myPen.getscreen().update()
+    time.sleep(delay)
+    myPen.clear()  # Clear Previous Drawing
+    myPen.reset()  # Reset Drawing Position
+
+
 def fish_movement(current_spot):
     # Update Next Spot of the Fish
     x = current_spot[0]
@@ -107,7 +152,7 @@ def fish_movement(current_spot):
                 if chance_move > 1600:
                     next_spot[1] = y-1  # Move Up
                 elif chance_move < 800:
-                    next_spot[0] = y+1  # Move Down
+                    next_spot[1] = y+1  # Move Down
                 else:
                     next_spot[0] = x+1  # Move Right
         # Right Wall
@@ -126,7 +171,7 @@ def fish_movement(current_spot):
                 if chance_move > 1600:
                     next_spot[1] = y-1  # Move Up
                 elif chance_move < 800:
-                    next_spot[0] = y+1  # Move Down
+                    next_spot[1] = y+1  # Move Down
                 else:
                     next_spot[0] = x-1  # Move Left
         # Middle Section
@@ -142,7 +187,7 @@ def fish_movement(current_spot):
                 if chance_move > 1600:
                     next_spot[1] = y-1  # Move Up
                 elif chance_move < 800:
-                    next_spot[0] = x+1  # Move Right
+                    next_spot[1] = x+1  # Move Right
                 else:
                     next_spot[0] = x-1  # Move Left
             else:
@@ -174,11 +219,22 @@ def fish_face(next_location, current_location):
             facing = FACE_LEFT
     # Return Result Value
     return facing
-  
-  
+
+
+def getWidth(array):
+    for x in range(len(array[0])):
+        width = x
+    return width
+
+def getHeight(array):
+    for y in range(len(array)):
+        height = y
+    return y
+
 def print_tank(fish_location, fish_direction):
     # Clean Tank
-    tank = [[0 for x in range(TANK_WIDTH * (STEP_SIZE+1))] for y in range(TANK_HEIGHT * (STEP_SIZE+1))]
+    tank = [[0 for x in range(TANK_WIDTH * (STEP_SIZE + 1))] for y in range(TANK_HEIGHT * (STEP_SIZE + 1))]
+    print("Obtained Tank Size : ", getWidth(tank), "*", getHeight(tank))
     fish_directed = [[0 for x in range(STEP_SIZE)] for y in range(STEP_SIZE)]
     # Select the Correct Fish Location
     if fish_direction == FACE_LEFT:
@@ -191,20 +247,34 @@ def print_tank(fish_location, fish_direction):
         fish_directed = FISH_DOWN
     else:
         print("Fish is right now invisible!")
-    # Prepare the Tank
+    # Prepare the Tank - Initialize Inner Content
     for x in range(STEP_SIZE):
         for y in range(STEP_SIZE):
+            print("    Overwriting Location :[", fish_location[0]*STEP_SIZE+x, "][", fish_location[1]*STEP_SIZE+y, "] from", tank[fish_location[0]*STEP_SIZE+x][fish_location[1]*STEP_SIZE+y], "to", fish_directed[x][y])
             tank[fish_location[0]*STEP_SIZE+x][fish_location[1]*STEP_SIZE+y] = fish_directed[x][y]
-    # Print Tank with Boundary
-    for y in range(TANK_HEIGHT*STEP_SIZE):
-        print("|", TANK[y], "|")
-    print(BOTTOM_BOUNDARY)
+    # Prepare the Tank - Add Vertical Boundary
+    for x in range(len(tank[0])):
+        tankwid = x
+    print("Counted Width :", tankwid)
+    for y in range(len(tank)):
+        print("    Overwriting row :", y)
+        print("[",y,"][ 0 ] -> ", tank[y][0])
+        tank[y][0] = 1
+        print("[",y,"][ 0 ] -> ", tank[y][0])
+        print("[",y,"][",tankwid,"] -> ", tank[y][tankwid])
+        tank[y][tankwid] = 1
+        print("[",y,"][",tankwid,"] -> ", tank[y][tankwid])
+    # Prepare the Tank - Add Bottom Boundary
+    tank.append(BOTTOM_BOUNDARY)
+    # Print Tank
+    draw(tank, 5, 3)
 
 
 ##############################################################
 #   Main Function
 ##############################################################
 def main():
+    signal.signal(signal.SIGINT, keyboardInterruptHandler)
     print("Hello World!")
     # Current Time
     current_location = [random.randint(0, TANK_WIDTH-1), random.randint(0, TANK_HEIGHT-1)]
@@ -217,11 +287,10 @@ def main():
     current_location = next_location
     print_tank(current_location, fish_direction)
     time.sleep(3)
-    os.system("clear")
-  
-  
+    os.system("cls")
+
 ##############################################################
 #    Main Function Runner
 ##############################################################
 if __name__ == "__main__":
-    main()
+        main()

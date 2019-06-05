@@ -178,16 +178,16 @@ def fish_movement(current_spot):
         else:
             if y == 0:
                 if chance_move > 1600:
-                    next_spot[1] = x+1  # Move Right
+                    next_spot[0] = x+1  # Move Right
                 elif chance_move < 800:
-                    next_spot[0] = y+1  # Move Down
+                    next_spot[1] = y+1  # Move Down
                 else:
                     next_spot[0] = x-1  # Move Left
             elif y == TANK_HEIGHT-1:
                 if chance_move > 1600:
                     next_spot[1] = y-1  # Move Up
                 elif chance_move < 800:
-                    next_spot[1] = x+1  # Move Right
+                    next_spot[0] = x+1  # Move Right
                 else:
                     next_spot[0] = x-1  # Move Left
             else:
@@ -293,4 +293,4 @@ def main():
 #    Main Function Runner
 ##############################################################
 if __name__ == "__main__":
-        main()
+    main()

@@ -72,8 +72,8 @@ FACE_LEFT = 10000
 FACE_RIGHT = 10001
 FACE_UP = 10002
 FACE_DOWN = 10003
-TANK_HEIGHT = 3
-TANK_WIDTH = 6
+TANK_HEIGHT = 6
+TANK_WIDTH = 10
 STEP_SIZE = 9
 EMPTY_BOX = [[0 for x in range(STEP_SIZE)] for y in range(STEP_SIZE)]
 BOTTOM_BOUNDARY = [1 for x in range(TANK_WIDTH * (STEP_SIZE + 1))]
@@ -275,7 +275,7 @@ def print_tank(fish_location, fish_direction, delay):
     # Prepare the Tank - Add Bottom Boundary
     tank.append(BOTTOM_BOUNDARY)
     # Print Tank
-    draw(tank, 5, delay)
+    draw(tank, 3, delay)
 
 
 ##############################################################

@@ -247,7 +247,7 @@ def blank_tank():
     return empty_tank
 
 
-def print_tank(fish_location, fish_direction):
+def print_tank(fish_location, fish_direction, delay):
     # Clean Tank
     tank = blank_tank()
     fish_directed = [[0 for x in range(STEP_SIZE)] for y in range(STEP_SIZE)]
@@ -275,7 +275,7 @@ def print_tank(fish_location, fish_direction):
     # Prepare the Tank - Add Bottom Boundary
     tank.append(BOTTOM_BOUNDARY)
     # Print Tank
-    draw(tank, 5, 3)
+    draw(tank, 5, delay)
 
 
 ##############################################################
@@ -285,17 +285,16 @@ def main():
     signal.signal(signal.SIGINT, keyboardInterruptHandler)
     # Current Time
     current_location = [random.randint(0, TANK_WIDTH-1), random.randint(0, TANK_HEIGHT-1)]
-    #print("Current Location :", current_location)
+    while True:
     # Future Time
-    present_location = [int(current_location[0]), int(current_location[1])]
-    next_location = fish_movement(current_location)
-    #print("Next Location :", next_location)
-    fish_direction = fish_face(next_location, present_location)
-    time.sleep(0.5)
-    # Step into Future
-    current_location = next_location
-    print_tank(current_location, fish_direction)
-    time.sleep(1)
+        present_location = [int(current_location[0]), int(current_location[1])]
+        next_location = fish_movement(current_location)
+        #print("Next Location :", next_location)
+        fish_direction = fish_face(next_location, present_location)
+        # Step into Future
+        current_location = next_location
+        print_tank(current_location, fish_direction, 0.0167)
+    myPen.bye()
     #os.system("cls")
 
 ##############################################################

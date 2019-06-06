@@ -31,6 +31,7 @@ FISH_LEFT.append([0, 0, 0, 1, 0, 0, 0, 1, 0])
 FISH_LEFT.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 FISH_LEFT.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
+
 FISH_RIGHT =     [[0, 0, 0, 0, 0, 0, 0, 0, 0]]
 FISH_RIGHT.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 FISH_RIGHT.append([0, 1, 0, 0, 0, 1, 0, 0, 0])
@@ -41,6 +42,7 @@ FISH_RIGHT.append([0, 1, 0, 0, 0, 1, 0, 0, 0])
 FISH_RIGHT.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 FISH_RIGHT.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
+
 FISH_UP =     [[0, 0, 0, 0, 0, 0, 0, 0, 0]]
 FISH_UP.append([0, 0, 0, 0, 1, 0, 0, 0, 0])
 FISH_UP.append([0, 0, 0, 1, 0, 1, 0, 0, 0])
@@ -50,6 +52,7 @@ FISH_UP.append([0, 0, 0, 0, 1, 0, 0, 0, 0])
 FISH_UP.append([0, 0, 0, 1, 0, 1, 0, 0, 0])
 FISH_UP.append([0, 0, 1, 0, 0, 0, 1, 0, 0])
 FISH_UP.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+
 
 FISH_DOWN =     [[0, 0, 0, 0, 0, 0, 0, 0, 0]]
 FISH_DOWN.append([0, 0, 1, 0, 0, 0, 1, 0, 0])
@@ -210,13 +213,19 @@ def fish_face(next_location, current_location):
     if next_location[0] == current_location[0]:
         if next_location[1] > current_location[1]:
             facing = FACE_DOWN
-        else:
+            #print("Facing Down")
+        elif next_location[1] < current_location[1]:
             facing = FACE_UP
+            #print("Facing Up")
+        else:
+            facing = FACE_RIGHT
     else:
         if next_location[0] > current_location[0]:
             facing = FACE_RIGHT
+            #print("Facing Right")
         else:
             facing = FACE_LEFT
+            #print("Facing Left")
     # Return Result Value
     return facing
 
@@ -226,15 +235,21 @@ def getWidth(array):
         width = x
     return width
 
+
 def getHeight(array):
     for y in range(len(array)):
         height = y
     return y
 
+
+def blank_tank():
+    empty_tank = [[0 for x in range(TANK_WIDTH * (STEP_SIZE + 1))] for y in range(TANK_HEIGHT * (STEP_SIZE + 1))]
+    return empty_tank
+
+
 def print_tank(fish_location, fish_direction):
     # Clean Tank
-    tank = [[0 for x in range(TANK_WIDTH * (STEP_SIZE + 1))] for y in range(TANK_HEIGHT * (STEP_SIZE + 1))]
-    print("Obtained Tank Size : ", getHeight(tank), "*", getWidth(tank))
+    tank = blank_tank()
     fish_directed = [[0 for x in range(STEP_SIZE)] for y in range(STEP_SIZE)]
     # Select the Correct Fish Location
     if fish_direction == FACE_LEFT:
@@ -251,23 +266,12 @@ def print_tank(fish_location, fish_direction):
     # Prepare the Tank - Initialize Inner Content
     for x in range(STEP_SIZE):
         for y in range(STEP_SIZE):
-            #print(fish_location[0]*STEP_SIZE+x)
-            #print(fish_location[1]*STEP_SIZE+y)
-            #print(tank[fish_location[1]*STEP_SIZE+y][fish_location[0]*STEP_SIZE+x])
-            #print("    Overwriting Location :[", fish_location[1]*STEP_SIZE+y, "][", fish_location[0]*STEP_SIZE+x, "] from", tank[fish_location[1]*STEP_SIZE+y][fish_location[0]*STEP_SIZE+x], "to", fish_directed[y][x])
             tank[fish_location[1]*STEP_SIZE+y][fish_location[0]*STEP_SIZE+x] = fish_directed[y][x]
     # Prepare the Tank - Add Vertical Boundary
-    for x in range(len(tank[0])):
-        tankwid = x
-    #print("Counted Width :", tankwid)
+    tankwid = getWidth(tank)
     for y in range(len(tank)):
-        #print("    Overwriting row :", y)
-        #print("[",y,"][ 0 ] -> ", tank[y][0])
         tank[y][0] = 1
-        #print("[",y,"][ 0 ] -> ", tank[y][0])
-        #print("[",y,"][",tankwid,"] -> ", tank[y][tankwid])
         tank[y][tankwid] = 1
-        #print("[",y,"][",tankwid,"] -> ", tank[y][tankwid])
     # Prepare the Tank - Add Bottom Boundary
     tank.append(BOTTOM_BOUNDARY)
     # Print Tank
@@ -279,18 +283,19 @@ def print_tank(fish_location, fish_direction):
 ##############################################################
 def main():
     signal.signal(signal.SIGINT, keyboardInterruptHandler)
-    print("Hello World!")
     # Current Time
     current_location = [random.randint(0, TANK_WIDTH-1), random.randint(0, TANK_HEIGHT-1)]
-    print("Current Location :", current_location)
+    #print("Current Location :", current_location)
     # Future Time
+    present_location = [int(current_location[0]), int(current_location[1])]
     next_location = fish_movement(current_location)
-    print("Next Location :", next_location)
-    fish_direction = fish_face(next_location, current_location)
+    #print("Next Location :", next_location)
+    fish_direction = fish_face(next_location, present_location)
+    time.sleep(0.5)
     # Step into Future
     current_location = next_location
     print_tank(current_location, fish_direction)
-    time.sleep(3)
+    time.sleep(1)
     #os.system("cls")
 
 ##############################################################
